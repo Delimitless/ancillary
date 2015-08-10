@@ -10,20 +10,7 @@ public class MapGenerator : MonoBehaviour {
 
 		cellularAutomator.CellularAutomate(map);
 
-		Map borderedMap = new Map(width + borderSize * 2, height + borderSize * 2);
-		for(int x = 0; x < borderedMap.Width; x++) {
-			for(int y = 0; y < borderedMap.Height; y++) {
-
-
-
-				if (x >= borderSize && y >= borderSize && x < borderedMap.Width - borderSize && y < borderedMap.Height - borderSize) {
-					borderedMap.Cells[x,y] = map.Cells[x-borderSize,y-borderSize];
-				}
-				else {
-					borderedMap.Cells[x,y] = Cell.SOLID;
-				}
-			}
-		}
+		Map borderedMap = CreateBorderedMap(map, borderSize);
 
 		return borderedMap;
 	}
@@ -42,5 +29,24 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	static Map CreateBorderedMap(Map map, int borderSize) {
+
+		Map borderedMap = new Map(map.Width + borderSize * 2, map.Height + borderSize * 2);
+
+		for(int x = 0; x < borderedMap.Width; x++) {
+			for(int y = 0; y < borderedMap.Height; y++) {
+				
+				if (map.IsWithinBounds(x-borderSize, y-borderSize)) {
+					borderedMap.Cells[x,y] = map.Cells[x-borderSize,y-borderSize];
+				}
+				else {
+					borderedMap.Cells[x,y] = Cell.SOLID;
+				}
+			}
+		}
+
+		return borderedMap;
 	}
 }
