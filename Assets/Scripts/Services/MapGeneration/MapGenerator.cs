@@ -7,7 +7,7 @@ public class MapGenerator : MonoBehaviour {
 	private int height;
 	private int randomFillPercent;
 	
-	private int[,] map;
+	private FillType[,] map;
 
 	public MapGenerator(int width, int height, int randomFillPercent) {
 		this.width = width;
@@ -15,8 +15,8 @@ public class MapGenerator : MonoBehaviour {
 		this.randomFillPercent = randomFillPercent;
 	}
 	
-	public int[,] GenerateMap() {
-		map = new int[width,height];
+	public FillType[,] GenerateMap() {
+		map = new FillType[width,height];
 		RandomFillMap();
 		
 		for (int i = 0; i < 5; i ++) {
@@ -35,10 +35,10 @@ public class MapGenerator : MonoBehaviour {
 		for (int x = 0; x < width; x ++) {
 			for (int y = 0; y < height; y ++) {
 				if (x == 0 || x == width-1 || y == 0 || y == height -1) {
-					map[x,y] = 1;
+					map[x,y] = FillType.SOLID;
 				}
 				else {
-					map[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent)? 1: 0;
+					map[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent) ? FillType.SOLID : FillType.EMPTY;
 				}
 			}
 		}
@@ -50,9 +50,9 @@ public class MapGenerator : MonoBehaviour {
 				int neighbourWallTiles = GetSurroundingWallCount(x,y);
 				
 				if (neighbourWallTiles > 4)
-					map[x,y] = 1;
+					map[x,y] = FillType.SOLID;
 				else if (neighbourWallTiles < 4)
-					map[x,y] = 0;
+					map[x,y] = FillType.EMPTY;
 				
 			}
 		}
