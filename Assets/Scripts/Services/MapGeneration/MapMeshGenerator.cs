@@ -38,50 +38,50 @@ public class MapMeshGenerator : MonoBehaviour {
 			
 			// 1 points:
 		case 1:
-			MeshFromPoints(square.centreBottom, square.bottomLeft, square.centreLeft);
+			MeshFromPoints(square.centerLeft, square.centerBottom, square.bottomLeft);
 			break;
 		case 2:
-			MeshFromPoints(square.centreRight, square.bottomRight, square.centreBottom);
+			MeshFromPoints(square.bottomRight, square.centerBottom, square.centerRight);
 			break;
 		case 4:
-			MeshFromPoints(square.centreTop, square.topRight, square.centreRight);
+			MeshFromPoints(square.topRight, square.centerRight, square.centerTop);
 			break;
 		case 8:
-			MeshFromPoints(square.topLeft, square.centreTop, square.centreLeft);
+			MeshFromPoints(square.topLeft, square.centerTop, square.centerLeft);
 			break;
 			
 			// 2 points:
 		case 3:
-			MeshFromPoints(square.centreRight, square.bottomRight, square.bottomLeft, square.centreLeft);
+			MeshFromPoints(square.centerRight, square.bottomRight, square.bottomLeft, square.centerLeft);
 			break;
 		case 6:
-			MeshFromPoints(square.centreTop, square.topRight, square.bottomRight, square.centreBottom);
+			MeshFromPoints(square.centerTop, square.topRight, square.bottomRight, square.centerBottom);
 			break;
 		case 9:
-			MeshFromPoints(square.topLeft, square.centreTop, square.centreBottom, square.bottomLeft);
+			MeshFromPoints(square.topLeft, square.centerTop, square.centerBottom, square.bottomLeft);
 			break;
 		case 12:
-			MeshFromPoints(square.topLeft, square.topRight, square.centreRight, square.centreLeft);
+			MeshFromPoints(square.topLeft, square.topRight, square.centerRight, square.centerLeft);
 			break;
 		case 5:
-			MeshFromPoints(square.centreTop, square.topRight, square.centreRight, square.centreBottom, square.bottomLeft, square.centreLeft);
+			MeshFromPoints(square.centerTop, square.topRight, square.centerRight, square.centerBottom, square.bottomLeft, square.centerLeft);
 			break;
 		case 10:
-			MeshFromPoints(square.topLeft, square.centreTop, square.centreRight, square.bottomRight, square.centreBottom, square.centreLeft);
+			MeshFromPoints(square.topLeft, square.centerTop, square.centerRight, square.bottomRight, square.centerBottom, square.centerLeft);
 			break;
 			
 			// 3 point:
 		case 7:
-			MeshFromPoints(square.centreTop, square.topRight, square.bottomRight, square.bottomLeft, square.centreLeft);
+			MeshFromPoints(square.centerTop, square.topRight, square.bottomRight, square.bottomLeft, square.centerLeft);
 			break;
 		case 11:
-			MeshFromPoints(square.topLeft, square.centreTop, square.centreRight, square.bottomRight, square.bottomLeft);
+			MeshFromPoints(square.topLeft, square.centerTop, square.centerRight, square.bottomRight, square.bottomLeft);
 			break;
 		case 13:
-			MeshFromPoints(square.topLeft, square.topRight, square.centreRight, square.centreBottom, square.bottomLeft);
+			MeshFromPoints(square.topLeft, square.topRight, square.centerRight, square.centerBottom, square.bottomLeft);
 			break;
 		case 14:
-			MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.centreBottom, square.centreLeft);
+			MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.centerBottom, square.centerLeft);
 			break;
 			
 			// 4 point:
@@ -152,7 +152,7 @@ public class MapMeshGenerator : MonoBehaviour {
 	public class Square {
 		
 		public ControlNode topLeft, topRight, bottomRight, bottomLeft;
-		public Node centreTop, centreRight, centreBottom, centreLeft;
+		public Node centerTop, centerRight, centerBottom, centerLeft;
 		public int configuration;
 		
 		public Square (ControlNode topLeft, ControlNode topRight, ControlNode bottomRight, ControlNode bottomLeft) {
@@ -161,10 +161,10 @@ public class MapMeshGenerator : MonoBehaviour {
 			this.bottomRight = bottomRight;
 			this.bottomLeft = bottomLeft;
 			
-			centreTop = topLeft.right;
-			centreRight = bottomRight.above;
-			centreBottom = bottomLeft.right;
-			centreLeft = bottomLeft.above;
+			centerTop = topLeft.right;
+			centerRight = bottomRight.above;
+			centerBottom = bottomLeft.right;
+			centerLeft = bottomLeft.above;
 			
 			if (topLeft.active)
 				configuration += 8;

@@ -6,6 +6,7 @@ public class MapDrawer : MonoBehaviour {
 	public int height;
 	[Range(0,100)] 
 	public int randomFillPercent;
+	public int borderSize;
 	public float squareSize;
 	
 	CellularAutomator cellularAutomator;
@@ -26,7 +27,7 @@ public class MapDrawer : MonoBehaviour {
 	}
 
 	void DrawMap() {
-		map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
+		map = MapGenerator.GenerateMap(width, height, borderSize, randomFillPercent, cellularAutomator);
 
 		GetComponent<MeshFilter>().mesh = meshGenerator.GenerateMesh(map, squareSize);
 	}
