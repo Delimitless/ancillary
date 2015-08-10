@@ -7,18 +7,19 @@ public class MapDrawer : MonoBehaviour {
 	public int height;
 	[Range(0,100)] 
 	public int randomFillPercent;
-
-	private MapGenerator generator;
+	
+	private CellularAutomator cellularAutomator;
 	private FillType[,] map;
 
 	void Start() {
-		generator = new MapGenerator(width, height, randomFillPercent);
-		map = generator.GenerateMap();
+		cellularAutomator = GetComponent<CellularAutomator>();
+
+		map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
 	}
 	
 	void Update() {
 		if (Input.GetMouseButtonDown(0)) {
-			map = generator.GenerateMap();
+			map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
 		}
 	}
 

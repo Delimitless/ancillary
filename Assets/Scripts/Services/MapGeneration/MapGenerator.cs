@@ -3,34 +3,24 @@ using System.Collections;
 
 public class MapGenerator : MonoBehaviour {
 
-	private int width;
-	private int height;
-	private int randomFillPercent;
-	
-	private FillType[,] map;
+	public static FillType[,] GenerateMap(int width, int height, int randomFillPercent, CellularAutomator cellularAutomator) {
 
-	public MapGenerator(int width, int height, int randomFillPercent) {
-		this.width = width;
-		this.height = height;
-		this.randomFillPercent = randomFillPercent;
-	}
-	
-	public FillType[,] GenerateMap() {
-		map = new FillType[width,height];
-		RandomFillMap();
-		
-		for (int i = 0; i < 5; i ++) {
-			SmoothMap();
-		}
+		FillType[,] map = new FillType[width,height];
+
+		RandomFillMap(map, randomFillPercent);
+
+		cellularAutomator.cellularAutomate(map);
 
 		return map;
 	}
 	
-	
-	void RandomFillMap() {
+	private static void RandomFillMap(FillType[,] map, int randomFillPercent) {
+
 		string seed = Time.time.ToString();
-		
 		System.Random pseudoRandom = new System.Random(seed.GetHashCode());
+
+		int width = map.GetLength(0);
+		int height = map.GetLength(1);
 		
 		for (int x = 0; x < width; x ++) {
 			for (int y = 0; y < height; y ++) {
@@ -42,37 +32,5 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
-	}
-	
-	void SmoothMap() {
-		for (int x = 0; x < width; x ++) {
-			for (int y = 0; y < height; y ++) {
-				int neighbourWallTiles = GetSurroundingWallCount(x,y);
-				
-				if (neighbourWallTiles > 4)
-					map[x,y] = FillType.SOLID;
-				else if (neighbourWallTiles < 4)
-					map[x,y] = FillType.EMPTY;
-				
-			}
-		}
-	}
-	
-	int GetSurroundingWallCount(int gridX, int gridY) {
-		int wallCount = 0;
-		for (int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX ++) {
-			for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY ++) {
-				if (neighbourX >= 0 && neighbourX < width && neighbourY >= 0 && neighbourY < height) {
-					if (neighbourX != gridX || neighbourY != gridY) {
-						wallCount += map[neighbourX,neighbourY];
-					}
-				}
-				else {
-					wallCount ++;
-				}
-			}
-		}
-		
-		return wallCount;
 	}
 }
