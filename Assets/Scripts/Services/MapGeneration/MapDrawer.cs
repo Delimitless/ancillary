@@ -6,13 +6,15 @@ public class MapDrawer : MonoBehaviour {
 	public int height;
 	[Range(0,100)] 
 	public int randomFillPercent;
-	public int squareSize;
+	public float squareSize;
 	
 	CellularAutomator cellularAutomator;
+	MapMeshGenerator meshGenerator;
 	Map map;
 
 	void Start() {
 		cellularAutomator = GetComponent<CellularAutomator>();
+		meshGenerator = GetComponent<MapMeshGenerator>();
 
 		DrawMap();
 	}
@@ -25,23 +27,7 @@ public class MapDrawer : MonoBehaviour {
 
 	void DrawMap() {
 		map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
-		GenerateMesh();
 
-	}
-
-	void GenerateMesh() {
-
-	}
-
-	void OnDrawGizmos() {
-		if (map != null) {
-			for (int x = 0; x < map.Width; x ++) {
-				for (int y = 0; y < map.Height; y ++) {
-					Gizmos.color = (map.Cells[x,y] == Cell.SOLID) ? Color.black : Color.white;
-					Vector3 pos = new Vector3(-map.Width/2 + x + .5f,-map.Height/2 + y+.5f, 0);
-					Gizmos.DrawCube(pos,Vector3.one);
-				}
-			}
-		}
+		GetComponent<MeshFilter>().mesh = meshGenerator.GenerateMesh(map, squareSize);
 	}
 }

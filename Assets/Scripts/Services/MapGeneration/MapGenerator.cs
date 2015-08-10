@@ -15,8 +15,7 @@ public class MapGenerator : MonoBehaviour {
 	
 	static void RandomFillMap(Map map, int randomFillPercent) {
 
-		string seed = Time.time.ToString();
-		System.Random pseudoRandom = new System.Random(seed.GetHashCode());
+		System.Random pseudoRandom = new System.Random();
 		
 		for (int x = 0; x < map.Width; x ++) {
 			for (int y = 0; y < map.Height; y ++) {
