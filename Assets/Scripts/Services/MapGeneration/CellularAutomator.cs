@@ -2,43 +2,46 @@
 
 public abstract class CellularAutomator : MonoBehaviour {
 
-	protected FillType[,] map;
+	protected Map map;
 
-	int width;
-	int height;
+	public void CellularAutomate(Map map) {
+		if (map == null) {
+			throw new System.ArgumentNullException ("map cannot be null");
+		}
 
-	public void CellularAutomate(FillType[,] map) {
 		this.map = map;
-		this.width = map.GetLength(0);
-		this.height = map.GetLength(1);
 
-		for(int i = 1; i < GetNumberOfIterations(); i++) {
-			CelluarAutomateIteration();
+		for (int i = 1; i < GetNumberOfIterations(); i++) {
+			CelluarAutomateIteration ();
 		}
 	}
 
 	void CelluarAutomateIteration() {
-		for (int x = 0; x < width; x ++) {
-			for (int y = 0; y < height; y ++) {
+		for (int x = 0; x < map.Width; x ++) {
+			for (int y = 0; y < map.Height; y ++) {
 				int neighborWallCount = GetSurroundingWallCount(x,y);
 				
-				FillAlgorithm(x, y, neighborWallCount);
+				SetCell(x, y, neighborWallCount);
 			}
 		}
 	}
 
-	int GetSurroundingWallCount(int gridX, int gridY) {
+	int GetSurroundingWallCount(int x, int y) {
 
 		int wallCount = 0;
-		for (int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX ++) {
-			for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY ++) {
-				if (neighbourX >= 0 && neighbourX < width && neighbourY >= 0 && neighbourY < height) {
-					if (neighbourX != gridX || neighbourY != gridY) {
-						wallCount += map[neighbourX,neighbourY];
+		for (int neighborX = x - 1; neighborX <= x + 1; neighborX ++) {
+			for (int neighborY = y - 1; neighborY <= y + 1; neighborY ++) {
+				if (map.IsWithinBounds(neighborX, neighborY)) {
+					if (neighborX != x || neighborY != y) {
+						Cell cell = map.Cells[neighborX, neighborY];
+
+						if (cell == Cell.SOLID) {
+							wallCount += 1;
+						}
 					}
 				}
 				else {
-					wallCount ++;
+					wallCount += 1;
 				}
 			}
 		}
@@ -46,7 +49,7 @@ public abstract class CellularAutomator : MonoBehaviour {
 		return wallCount;
 	}
 
-	protected abstract void FillAlgorithm(int x, int y, int neighborWallCount);
+	protected abstract void SetCell(int x, int y, int neighborWallCount);
 
 	protected abstract int GetNumberOfIterations();
 }

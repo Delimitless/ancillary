@@ -9,7 +9,7 @@ public class MapDrawer : MonoBehaviour {
 	public int squareSize;
 	
 	CellularAutomator cellularAutomator;
-	FillType[,] map;
+	Map map;
 
 	void Start() {
 		cellularAutomator = GetComponent<CellularAutomator>();
@@ -35,10 +35,10 @@ public class MapDrawer : MonoBehaviour {
 
 	void OnDrawGizmos() {
 		if (map != null) {
-			for (int x = 0; x < width; x ++) {
-				for (int y = 0; y < height; y ++) {
-					Gizmos.color = (map[x,y] == FillType.SOLID)?Color.black:Color.white;
-					Vector3 pos = new Vector3(-width/2 + x + .5f,-height/2 + y+.5f, 0);
+			for (int x = 0; x < map.Width; x ++) {
+				for (int y = 0; y < map.Height; y ++) {
+					Gizmos.color = (map.Cells[x,y] == Cell.SOLID) ? Color.black : Color.white;
+					Vector3 pos = new Vector3(-map.Width/2 + x + .5f,-map.Height/2 + y+.5f, 0);
 					Gizmos.DrawCube(pos,Vector3.one);
 				}
 			}

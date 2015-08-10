@@ -2,9 +2,9 @@
 
 public class MapGenerator : MonoBehaviour {
 
-	public static FillType[,] GenerateMap(int width, int height, int randomFillPercent, CellularAutomator cellularAutomator) {
+	public static Map GenerateMap(int width, int height, int randomFillPercent, CellularAutomator cellularAutomator) {
 
-		FillType[,] map = new FillType[width,height];
+		Map map = new Map(width, height);
 
 		RandomFillMap(map, randomFillPercent);
 
@@ -13,21 +13,18 @@ public class MapGenerator : MonoBehaviour {
 		return map;
 	}
 	
-	static void RandomFillMap(FillType[,] map, int randomFillPercent) {
+	static void RandomFillMap(Map map, int randomFillPercent) {
 
 		string seed = Time.time.ToString();
 		System.Random pseudoRandom = new System.Random(seed.GetHashCode());
-
-		int width = map.GetLength(0);
-		int height = map.GetLength(1);
 		
-		for (int x = 0; x < width; x ++) {
-			for (int y = 0; y < height; y ++) {
-				if (x == 0 || x == width-1 || y == 0 || y == height -1) {
-					map[x,y] = FillType.SOLID;
+		for (int x = 0; x < map.Width; x ++) {
+			for (int y = 0; y < map.Height; y ++) {
+				if (x == 0 || x == map.Width-1 || y == 0 || y == map.Height -1) {
+					map.Cells[x,y] = Cell.SOLID;
 				}
 				else {
-					map[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent) ? FillType.SOLID : FillType.EMPTY;
+					map.Cells[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent) ? Cell.SOLID : Cell.EMPTY;
 				}
 			}
 		}
