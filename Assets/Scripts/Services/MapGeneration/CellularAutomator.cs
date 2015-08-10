@@ -15,7 +15,7 @@ public abstract class CellularAutomator : MonoBehaviour {
 	void CelluarAutomateIteration(Map map) {
 		for (int x = 0; x < map.Width; x ++) {
 			for (int y = 0; y < map.Height; y ++) {
-				int neighborWallCount = GetSurroundingWallCount(map, x,y);
+				int neighborWallCount = GetSurroundingWallCount(map, x, y);
 				
 				SetCell(map, x, y, neighborWallCount);
 			}
