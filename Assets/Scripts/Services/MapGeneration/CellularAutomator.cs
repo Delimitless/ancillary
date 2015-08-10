@@ -2,31 +2,27 @@
 
 public abstract class CellularAutomator : MonoBehaviour {
 
-	protected Map map;
-
 	public void CellularAutomate(Map map) {
 		if (map == null) {
 			throw new System.ArgumentNullException ("map cannot be null");
 		}
 
-		this.map = map;
-
 		for (int i = 1; i < GetNumberOfIterations(); i++) {
-			CelluarAutomateIteration ();
+			CelluarAutomateIteration (map);
 		}
 	}
 
-	void CelluarAutomateIteration() {
+	void CelluarAutomateIteration(Map map) {
 		for (int x = 0; x < map.Width; x ++) {
 			for (int y = 0; y < map.Height; y ++) {
-				int neighborWallCount = GetSurroundingWallCount(x,y);
+				int neighborWallCount = GetSurroundingWallCount(map, x,y);
 				
-				SetCell(x, y, neighborWallCount);
+				SetCell(map, x, y, neighborWallCount);
 			}
 		}
 	}
 
-	int GetSurroundingWallCount(int x, int y) {
+	int GetSurroundingWallCount(Map map, int x, int y) {
 
 		int wallCount = 0;
 		for (int neighborX = x - 1; neighborX <= x + 1; neighborX ++) {
@@ -49,7 +45,7 @@ public abstract class CellularAutomator : MonoBehaviour {
 		return wallCount;
 	}
 
-	protected abstract void SetCell(int x, int y, int neighborWallCount);
+	protected abstract void SetCell(Map map, int x, int y, int neighborWallCount);
 
 	protected abstract int GetNumberOfIterations();
 }
