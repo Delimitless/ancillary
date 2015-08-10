@@ -7,7 +7,14 @@ public class MapMeshGenerator : MonoBehaviour {
 	List<Vector3> vertices;
 	List<int> triangles;
 
+	Dictionary<int, List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>>();
+	List<List<int>> outlines = new List<List<int>>();
+	HashSet<int> checkedVertices = new HashSet<int>();
+
 	public Mesh GenerateMesh(Map map, float squareSize) {
+
+		outlines.Clear();
+		checkedVertices.Clear();
 
 		squareGrid = new SquareGrid(map, squareSize);
 		
@@ -26,6 +33,8 @@ public class MapMeshGenerator : MonoBehaviour {
 
 		mesh.RecalculateNormals();
 		mesh.RecalculateBounds();
+
+		Generate2DColliders();
 
 		return mesh;
 	}
@@ -87,6 +96,10 @@ public class MapMeshGenerator : MonoBehaviour {
 			// 4 point:
 		case 15:
 			MeshFromPoints(square.topLeft, square.topRight, square.bottomRight, square.bottomLeft);
+			checkedVertices.Add(square.topLeft.vertexIndex);
+			checkedVertices.Add(square.topRight.vertexIndex);
+			checkedVertices.Add(square.bottomRight.vertexIndex);
+			checkedVertices.Add(square.bottomLeft.vertexIndex);
 			break;
 		}
 		
@@ -119,6 +132,131 @@ public class MapMeshGenerator : MonoBehaviour {
 		triangles.Add(a.vertexIndex);
 		triangles.Add(b.vertexIndex);
 		triangles.Add(c.vertexIndex);
+
+		Triangle triangle = new Triangle(a.vertexIndex, b.vertexIndex, c.vertexIndex);
+		AddTriangleToDictionary(triangle.vertexIndexA, triangle);
+		AddTriangleToDictionary(triangle.vertexIndexB, triangle);
+		AddTriangleToDictionary(triangle.vertexIndexC, triangle);
+	}
+
+	void AddTriangleToDictionary(int vertexIndexKey, Triangle triangle) {
+		if (triangleDictionary.ContainsKey(vertexIndexKey)) {
+			triangleDictionary[vertexIndexKey].Add (triangle);
+		}
+		else {
+			List<Triangle> triangleList = new List<Triangle>();
+			triangleList.Add(triangle);
+			triangleDictionary.Add(vertexIndexKey, triangleList);
+		}
+	}
+
+	void Generate2DColliders() {
+		
+		EdgeCollider2D[] currentColliders = gameObject.GetComponents<EdgeCollider2D> ();
+		for (int i = 0; i < currentColliders.Length; i++) {
+			Destroy(currentColliders[i]);
+		}
+		
+		CalculateMeshOutlines();
+		
+		foreach (List<int> outline in outlines) {
+			EdgeCollider2D edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
+			Vector2[] edgePoints = new Vector2[outline.Count];
+			
+			for (int i =0; i < outline.Count; i ++) {
+				edgePoints[i] = new Vector2(vertices[outline[i]].x,vertices[outline[i]].z);
+			}
+			edgeCollider.points = edgePoints;
+		}
+		
+	}
+
+	void CalculateMeshOutlines() {
+
+		for (int vertexIndex = 0; vertexIndex < vertices.Count; vertexIndex++) {
+			if (!checkedVertices.Contains(vertexIndex)) {
+				int newOutlineVertex = GetConnectedOutlineVertex(vertexIndex);
+
+				if (newOutlineVertex != -1) {
+					checkedVertices.Add(vertexIndex);
+
+					List<int> newOutline = new List<int>();
+					newOutline.Add(vertexIndex);
+					outlines.Add (newOutline);
+					FollowOutline(newOutlineVertex, outlines.Count-1);
+					outlines[outlines.Count-1].Add(vertexIndex);
+				}
+			}
+		}
+	}
+
+	void FollowOutline(int vertexIndex, int outlineIndex) {
+		outlines[outlineIndex].Add(vertexIndex);
+		checkedVertices.Add(vertexIndex);
+		int nextVertexIndex = GetConnectedOutlineVertex(vertexIndex);
+
+		if (nextVertexIndex != -1) {
+			FollowOutline(nextVertexIndex, outlineIndex);
+		}
+	}
+
+	int GetConnectedOutlineVertex(int vertex) {
+		List<Triangle> trianglesContainingVertex = triangleDictionary[vertex];
+
+		for (int i = 0; i < trianglesContainingVertex.Count; i++) {
+			Triangle triangle = trianglesContainingVertex [i];
+
+			if (IsOutlineEdge (vertex, triangle.vertexIndexA)) {
+				return triangle.vertexIndexA;
+			}
+			if (IsOutlineEdge (vertex, triangle.vertexIndexB)) {
+				return triangle.vertexIndexB;
+			}
+			if (IsOutlineEdge (vertex, triangle.vertexIndexC)) {
+				return triangle.vertexIndexC;
+			}
+		}
+
+		return -1;
+	}
+
+	bool IsOutlineEdge(int vertex, int otherVertex) {
+
+		// No point in comparing vertex to itself, of if it's already been checked.
+		if (vertex == otherVertex || checkedVertices.Contains(otherVertex)) {
+			return false;
+		}
+
+		List<Triangle> trianglesContainingVertex = triangleDictionary[vertex];
+		int sharedTriangleCount = 0;
+
+		for (int i = 0; i < trianglesContainingVertex.Count; i++) {
+			if (trianglesContainingVertex[i].Contains(otherVertex)) {
+				sharedTriangleCount += 1;
+
+				if (sharedTriangleCount > 1) {
+					break;
+				}
+			}
+		}
+
+		return sharedTriangleCount == 1;
+	}
+
+	struct Triangle {
+		public int vertexIndexA;
+		public int vertexIndexB;
+		public int vertexIndexC;
+
+		public Triangle(int a, int b, int c) {
+			vertexIndexA = a;
+			vertexIndexB = b;
+			vertexIndexC = c;
+		}
+
+		public bool Contains(int vertexIndex) {
+			return vertexIndex == vertexIndexA || vertexIndex == vertexIndexB || vertexIndex == vertexIndexC;
+		}
 	}
 
 	public class SquareGrid {
@@ -197,6 +335,5 @@ public class MapMeshGenerator : MonoBehaviour {
 			above = new Node(position + Vector3.up * squareSize/2f);
 			right = new Node(position + Vector3.right * squareSize/2f);
 		}
-		
 	}
 }
