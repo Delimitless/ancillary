@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class MapDrawer : MonoBehaviour {
 
@@ -7,20 +6,31 @@ public class MapDrawer : MonoBehaviour {
 	public int height;
 	[Range(0,100)] 
 	public int randomFillPercent;
+	public int squareSize;
 	
-	private CellularAutomator cellularAutomator;
-	private FillType[,] map;
+	CellularAutomator cellularAutomator;
+	FillType[,] map;
 
 	void Start() {
 		cellularAutomator = GetComponent<CellularAutomator>();
 
-		map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
+		DrawMap();
 	}
 	
 	void Update() {
 		if (Input.GetMouseButtonDown(0)) {
-			map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
+			DrawMap();
 		}
+	}
+
+	void DrawMap() {
+		map = MapGenerator.GenerateMap(width, height, randomFillPercent, cellularAutomator);
+		GenerateMesh();
+
+	}
+
+	void GenerateMesh() {
+
 	}
 
 	void OnDrawGizmos() {

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class MapGenerator : MonoBehaviour {
 
@@ -9,12 +8,12 @@ public class MapGenerator : MonoBehaviour {
 
 		RandomFillMap(map, randomFillPercent);
 
-		cellularAutomator.cellularAutomate(map);
+		cellularAutomator.CellularAutomate(map);
 
 		return map;
 	}
 	
-	private static void RandomFillMap(FillType[,] map, int randomFillPercent) {
+	static void RandomFillMap(FillType[,] map, int randomFillPercent) {
 
 		string seed = Time.time.ToString();
 		System.Random pseudoRandom = new System.Random(seed.GetHashCode());
