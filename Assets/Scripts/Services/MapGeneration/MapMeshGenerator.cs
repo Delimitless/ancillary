@@ -164,7 +164,7 @@ public class MapMeshGenerator : MonoBehaviour {
 			Vector2[] edgePoints = new Vector2[outline.Count];
 			
 			for (int i =0; i < outline.Count; i ++) {
-				edgePoints[i] = new Vector2(vertices[outline[i]].x,vertices[outline[i]].z);
+				edgePoints[i] = new Vector2(vertices[outline[i]].x,vertices[outline[i]].y);
 			}
 			edgeCollider.points = edgePoints;
 		}
