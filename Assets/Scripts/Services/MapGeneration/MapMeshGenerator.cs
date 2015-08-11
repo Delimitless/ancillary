@@ -235,7 +235,7 @@ public class MapMeshGenerator : MonoBehaviour {
 				sharedTriangleCount += 1;
 
 				if (sharedTriangleCount > 1) {
-					break;
+					return false;
 				}
 			}
 		}
