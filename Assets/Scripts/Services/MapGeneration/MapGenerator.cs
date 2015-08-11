@@ -10,6 +10,9 @@ public class MapGenerator : MonoBehaviour {
 
 		cellularAutomator.CellularAutomate(map);
 
+		MapRoomProcessor processor = new MapRoomProcessor(map);
+		processor.ProcessRooms();
+
 		Map borderedMap = CreateBorderedMap(map, borderSize);
 
 		return borderedMap;
