@@ -4,23 +4,24 @@ using System.Collections.Generic;
 public class MapMeshGenerator : MonoBehaviour {
 
 	SquareGrid squareGrid;
+
 	List<Vector3> vertices;
 	List<int> triangles;
 
-	Dictionary<int, List<Triangle>> triangleDictionary = new Dictionary<int, List<Triangle>>();
-	List<List<int>> outlines = new List<List<int>>();
-	HashSet<int> checkedVertices = new HashSet<int>();
+	Dictionary<int, List<Triangle>> triangleDictionary;
+	List<List<int>> outlines;
+	HashSet<int> checkedVertices;
 
 	public Mesh GenerateMesh(Map map, float squareSize) {
 
-		outlines.Clear();
-		checkedVertices.Clear();
-
-		squareGrid = new SquareGrid(map, squareSize);
-		
 		vertices = new List<Vector3>();
 		triangles = new List<int>();
-		
+
+		triangleDictionary = new Dictionary<int, List<Triangle>>();
+		outlines = new List<List<int>>();
+		checkedVertices = new HashSet<int>();
+
+		squareGrid = new SquareGrid(map, squareSize);
 		for (int x = 0; x < squareGrid.squares.GetLength(0); x ++) {
 			for (int y = 0; y < squareGrid.squares.GetLength(1); y ++) {
 				TriangulateSquare(squareGrid.squares[x,y]);
@@ -151,10 +152,9 @@ public class MapMeshGenerator : MonoBehaviour {
 	}
 
 	void Generate2DColliders() {
-		
-		EdgeCollider2D[] currentColliders = gameObject.GetComponents<EdgeCollider2D> ();
-		for (int i = 0; i < currentColliders.Length; i++) {
-			Destroy(currentColliders[i]);
+
+		foreach (EdgeCollider2D collider in gameObject.GetComponents<EdgeCollider2D>()) {
+			Destroy(collider);
 		}
 		
 		CalculateMeshOutlines();
