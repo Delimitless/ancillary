@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class MapMeshGenerator : MonoBehaviour {
 
+	public bool generateColliders = true;
+
 	SquareGrid squareGrid;
 
 	List<Vector3> vertices;
@@ -35,7 +37,9 @@ public class MapMeshGenerator : MonoBehaviour {
 		mesh.RecalculateNormals();
 		mesh.RecalculateBounds();
 
-		Generate2DColliders();
+		if(generateColliders) {
+			Generate2DColliders();
+		}
 
 		return mesh;
 	}
