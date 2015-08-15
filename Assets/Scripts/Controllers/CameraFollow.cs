@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class CameraFollow : MonoBehaviour {
 	
-	public PlayerCollisionController target;
+	public GameObject target;
 	public float verticalOffset;
 	public float lookAheadDstX;
 	public float lookSmoothTimeX;
 	public float verticalSmoothTime;
 	public Vector2 focusAreaSize;
+
+	BoxCollider2D targetBoxCollider;
 	
 	FocusArea focusArea;
 	
@@ -21,17 +22,22 @@ public class CameraFollow : MonoBehaviour {
 	bool lookAheadStopped;
 	
 	void Start() {
-		focusArea = new FocusArea (target.boxCollider.bounds, focusAreaSize);
+		targetBoxCollider = target.GetComponent<BoxCollider2D>();
+
+		focusArea = new FocusArea (targetBoxCollider.bounds, focusAreaSize);
 	}
 	
 	void LateUpdate() {
-		focusArea.Update (target.boxCollider.bounds);
+		focusArea.Update (targetBoxCollider.bounds);
 		
 		Vector2 focusPosition = focusArea.centre + Vector2.up * verticalOffset;
 		
 		if (focusArea.velocity.x != 0) {
 			lookAheadDirX = Mathf.Sign (focusArea.velocity.x);
-			if (Mathf.Sign(target.playerInput.x) == Mathf.Sign(focusArea.velocity.x) && target.playerInput.x != 0) {
+
+			Vector2 input = InputHandler.Instance.GetMovementVector();
+
+			if (Mathf.Sign(input.x) == Mathf.Sign(focusArea.velocity.x) && input.x != 0) {
 				lookAheadStopped = false;
 				targetLookAheadX = lookAheadDirX * lookAheadDstX;
 			}

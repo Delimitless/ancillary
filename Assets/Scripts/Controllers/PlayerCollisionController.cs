@@ -7,10 +7,8 @@ public class PlayerCollisionController : MonoBehaviour {
 
 	public int horizontalRayCount = 4;
 	public int verticalRayCount = 4;
-
-	public BoxCollider2D boxCollider;
+	
 	public CollisionInfo collisions;
-	public Vector2 playerInput;
 
 	const float SKIN_WIDTH = .015f;
 	const float MAX_CLIMB_ANGLE = 80;
@@ -20,15 +18,14 @@ public class PlayerCollisionController : MonoBehaviour {
 	float verticalRaySpacing;
 
 	RaycastOrigins raycastOrigins;
-
+	BoxCollider2D boxCollider;
 	
 	void Start() {
-		boxCollider = GetComponent<BoxCollider2D> ();
+		boxCollider = GetComponent<BoxCollider2D>();
 		CalculateRaySpacing ();
 	}
-	
-	public void Move(Vector3 velocity, Vector2 playerInput) {
-		this.playerInput = playerInput;
+
+	public void Move(Vector3 velocity) {
 
 		UpdateRaycastOrigins ();
 		collisions.Reset ();
