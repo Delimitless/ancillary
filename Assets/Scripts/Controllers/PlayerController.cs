@@ -1,44 +1,50 @@
 using UnityEngine;
 
-[RequireComponent (typeof (PlayerCollisionController))]
+[RequireComponent (typeof(BoxCollider2D))]
 public class PlayerController : MonoBehaviour {
 	
 	public float jumpHeight = 4;
 	public float timeToJumpApex = .4f;
-	float accelerationTimeAirborne = .2f;
-	float accelerationTimeGrounded = .1f;
-	float moveSpeed = 6;
+	public float accelerationTimeAirborne = .2f;
+	public float accelerationTimeGrounded = .1f;
+	public float moveSpeed = 6;
+
+	public LayerMask collisionMask;
 	
 	float gravity;
 	float jumpVelocity;
-	Vector3 velocity;
+
+	Vector2 velocity;
+
 	float velocityXSmoothing;
 	
-	PlayerCollisionController controller;
+	CollisionHandler collisionHandler;
 	
 	void Start() {
-		controller = GetComponent<PlayerCollisionController> ();
+
+		collisionHandler = new CollisionHandler(GetComponent<BoxCollider2D>(), collisionMask);
 		
 		gravity = -(2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
 		jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
-		print ("Gravity: " + gravity + "  Jump Velocity: " + jumpVelocity);
 	}
 	
 	void Update() {
 		
-		if (controller.collisions.above || controller.collisions.below) {
+		if (collisionHandler.collisions.above || collisionHandler.collisions.below) {
 			velocity.y = 0;
 		}
 		
 		Vector2 input = InputHandler.Instance.GetMovementVector();
 		
-		if (InputHandler.Instance.IsJumpPressed() && controller.collisions.below) {
+		if (InputHandler.Instance.IsJumpPressed() && collisionHandler.collisions.below) {
 			velocity.y = jumpVelocity;
 		}
 		
 		float targetVelocityX = input.x * moveSpeed;
-		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
+		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (collisionHandler.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
 		velocity.y += gravity * Time.deltaTime;
-		controller.Move (velocity * Time.deltaTime);
+
+		Vector2 finalVelocity = collisionHandler.CalculateCollisions (velocity * Time.deltaTime);
+		transform.Translate (finalVelocity);
 	}
 }
