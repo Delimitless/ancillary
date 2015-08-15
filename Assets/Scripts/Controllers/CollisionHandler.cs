@@ -34,10 +34,10 @@ public class CollisionHandler {
 		if (velocity.y < 0) {
 			DescendSlope(ref velocity);
 		}
-		if (velocity.x != 0) {
+		if (!Mathf.Approximately(velocity.x, 0)) {
 			HorizontalCollisions (ref velocity);
 		}
-		if (velocity.y != 0) {
+		if (!Mathf.Approximately(velocity.y, 0)) {
 			VerticalCollisions (ref velocity);
 		}
 		
@@ -57,7 +57,7 @@ public class CollisionHandler {
 		float rayLength = Mathf.Abs (velocity.x) + SKIN_WIDTH;
 		
 		for (int i = 0; i < HORIZONTAL_RAY_COUNT; i ++) {
-			Vector2 rayOrigin = (directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
+			Vector2 rayOrigin = (Mathf.Approximately(directionX, -1))?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
 			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 			
@@ -73,7 +73,7 @@ public class CollisionHandler {
 						velocity = originalVelocity;
 					}
 					float distanceToSlopeStart = 0;
-					if (slopeAngle != collisions.prevSlopeAngle) {
+					if (!Mathf.Approximately(slopeAngle, collisions.prevSlopeAngle)) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
@@ -89,8 +89,8 @@ public class CollisionHandler {
 						velocity.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x);
 					}
 					
-					collisions.left = directionX == -1;
-					collisions.right = directionX == 1;
+					collisions.left = Mathf.Approximately(directionX, -1);
+					collisions.right = Mathf.Approximately(directionX, 1);
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class CollisionHandler {
 		float rayLength = Mathf.Abs (velocity.y) + SKIN_WIDTH;
 		
 		for (int i = 0; i < VERTICAL_RAY_COUNT; i ++) {
-			Vector2 rayOrigin = (directionY == -1)?raycastOrigins.bottomLeft:raycastOrigins.topLeft;
+			Vector2 rayOrigin = (Mathf.Approximately(directionY, -1))?raycastOrigins.bottomLeft:raycastOrigins.topLeft;
 			rayOrigin += Vector2.right * (verticalRaySpacing * i + velocity.x);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
 			
@@ -115,20 +115,20 @@ public class CollisionHandler {
 					velocity.x = velocity.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign(velocity.x);
 				}
 				
-				collisions.below = directionY == -1;
-				collisions.above = directionY == 1;
+				collisions.below = Mathf.Approximately(directionY, -1);
+				collisions.above = Mathf.Approximately(directionY, 1);
 			}
 		}
 		
 		if (collisions.climbingSlope) {
 			float directionX = Mathf.Sign(velocity.x);
 			rayLength = Mathf.Abs(velocity.x) + SKIN_WIDTH;
-			Vector2 rayOrigin = ((directionX == -1)?raycastOrigins.bottomLeft:raycastOrigins.bottomRight) + Vector2.up * velocity.y;
+			Vector2 rayOrigin = ((Mathf.Approximately(directionX, -1))?raycastOrigins.bottomLeft:raycastOrigins.bottomRight) + Vector2.up * velocity.y;
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin,Vector2.right * directionX,rayLength,collisionMask);
 			
 			if (hit) {
 				float slopeAngle = Vector2.Angle(hit.normal,Vector2.up);
-				if (slopeAngle != collisions.slopeAngle) {
+				if (!Mathf.Approximately(slopeAngle, collisions.slopeAngle)) {
 					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
 					collisions.slopeAngle = slopeAngle;
 				}
@@ -151,13 +151,13 @@ public class CollisionHandler {
 	
 	void DescendSlope(ref Vector2 velocity) {
 		float directionX = Mathf.Sign (velocity.x);
-		Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
+		Vector2 rayOrigin = (Mathf.Approximately(directionX, -1)) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 		RaycastHit2D hit = Physics2D.Raycast (rayOrigin, -Vector2.up, Mathf.Infinity, collisionMask);
 		
 		if (hit) {
 			float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-			if (slopeAngle != 0 && slopeAngle <= MAX_DESCEND_ANGLE) {
-				if (Mathf.Sign(hit.normal.x) == directionX) {
+			if (!Mathf.Approximately(slopeAngle, 0) && slopeAngle <= MAX_DESCEND_ANGLE) {
+				if (Mathf.Approximately(Mathf.Sign(hit.normal.x), directionX)) {
 					if (hit.distance - SKIN_WIDTH <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x)) {
 						float moveDistance = Mathf.Abs(velocity.x);
 						float descendVelocityY = Mathf.Sin (slopeAngle * Mathf.Deg2Rad) * moveDistance;

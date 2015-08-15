@@ -32,12 +32,12 @@ public class CameraFollow : MonoBehaviour {
 		
 		Vector2 focusPosition = focusArea.centre + Vector2.up * verticalOffset;
 		
-		if (focusArea.velocity.x != 0) {
+		if (!Mathf.Approximately(focusArea.velocity.x, 0)) {
 			lookAheadDirX = Mathf.Sign (focusArea.velocity.x);
 
 			Vector2 input = InputHandler.Instance.GetMovementVector();
 
-			if (Mathf.Sign(input.x) == Mathf.Sign(focusArea.velocity.x) && input.x != 0) {
+			if (Mathf.Approximately(Mathf.Sign(input.x), Mathf.Sign(focusArea.velocity.x)) && !Mathf.Approximately(input.x, 0)) {
 				lookAheadStopped = false;
 				targetLookAheadX = lookAheadDirX * lookAheadDstX;
 			}
