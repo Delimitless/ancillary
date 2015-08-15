@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour {
 
 	public LayerMask collisionMask;
 	
-	float gravity;
+	float gravityAcceleration;
 	float jumpVelocity;
 
 	Vector2 velocity;
@@ -23,28 +23,37 @@ public class PlayerController : MonoBehaviour {
 	void Start() {
 
 		collisionHandler = new CollisionHandler(GetComponent<BoxCollider2D>(), collisionMask);
-		
-		gravity = -(2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
-		jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
+
+		// Kinematic equation: accerlation = (2 x distance) / (time^2)
+		// Initial velocity is zero.
+		gravityAcceleration = -(2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
+
+		// Kinematic equation: final_velocity = acceleration * time
+		// Initial velocity is zero.
+		jumpVelocity = Mathf.Abs(gravityAcceleration) * timeToJumpApex;
 	}
 	
 	void Update() {
-		
+
+		// Handle y direction.
 		if (collisionHandler.collisions.above || collisionHandler.collisions.below) {
 			velocity.y = 0;
 		}
-		
-		Vector2 input = InputHandler.Instance.GetMovementVector();
-		
+
 		if (InputHandler.Instance.IsJumpPressed() && collisionHandler.collisions.below) {
 			velocity.y = jumpVelocity;
 		}
-		
-		float targetVelocityX = input.x * moveSpeed;
-		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (collisionHandler.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
-		velocity.y += gravity * Time.deltaTime;
 
+		velocity.y += gravityAcceleration * Time.deltaTime;
+
+		// Handle x direction.
+		float targetVelocityX = InputHandler.Instance.GetMovementVector().x * moveSpeed;
+		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (collisionHandler.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
+
+		// Handle collisions.
 		Vector2 finalVelocity = collisionHandler.CalculateCollisions (velocity * Time.deltaTime);
+
+		// Move player
 		transform.Translate (finalVelocity);
 	}
 }
