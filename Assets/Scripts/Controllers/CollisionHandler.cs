@@ -5,13 +5,11 @@ public class CollisionHandler {
 	const float SKIN_WIDTH = .015f;
 	const int HORIZONTAL_RAY_COUNT = 4;
 	const int VERTICAL_RAY_COUNT = 4;
-	const float MAX_CLIMB_ANGLE = 80;
-	const float MAX_DESCEND_ANGLE = 80;
+	const float MAX_CLIMB_ANGLE = 70;
+	const float MAX_DESCEND_ANGLE = 70;
 	
 	float horizontalRaySpacing;
 	float verticalRaySpacing;
-
-	Vector2 originalVelocity;
 
 	BoxCollider2D boxCollider;
 	LayerMask collisionMask;
@@ -28,12 +26,8 @@ public class CollisionHandler {
 	public Vector2 CalculateCollisions(Vector2 velocity) {
 
 		UpdateRaycastOrigins ();
-		collisions.Reset ();
-		originalVelocity = velocity;
-		
-		if (velocity.y < 0) {
-			DescendSlope(ref velocity);
-		}
+		collisions.Reset();
+
 		if (!Mathf.Approximately(velocity.x, 0)) {
 			HorizontalCollisions (ref velocity);
 		}
@@ -68,10 +62,6 @@ public class CollisionHandler {
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 				
 				if (i == 0 && slopeAngle <= MAX_CLIMB_ANGLE) {
-					if (collisions.descendingSlope) {
-						collisions.descendingSlope = false;
-						velocity = originalVelocity;
-					}
 					float distanceToSlopeStart = 0;
 					if (!Mathf.Approximately(slopeAngle, collisions.prevSlopeAngle)) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
@@ -97,6 +87,10 @@ public class CollisionHandler {
 	}
 	
 	void VerticalCollisions(ref Vector2 velocity) {
+		if (velocity.y < 0) {
+			DescendSlope(ref velocity);
+		}
+
 		float directionY = Mathf.Sign(velocity.y);
 		float rayLength = Mathf.Abs(velocity.y) + SKIN_WIDTH;
 		
