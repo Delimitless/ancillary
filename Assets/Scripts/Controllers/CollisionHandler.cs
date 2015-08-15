@@ -5,8 +5,8 @@ public class CollisionHandler {
 	const float SKIN_WIDTH = .015f;
 	const int HORIZONTAL_RAY_COUNT = 4;
 	const int VERTICAL_RAY_COUNT = 4;
-	const float MAX_CLIMB_ANGLE = 70;
-	const float MAX_DESCEND_ANGLE = 70;
+	const float MAX_CLIMB_ANGLE = 75;
+	const float MAX_DESCEND_ANGLE = 75;
 	
 	float horizontalRaySpacing;
 	float verticalRaySpacing;
