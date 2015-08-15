@@ -2,15 +2,17 @@
 
 public class InputHandler : Singleton<InputHandler> {
 
-	Vector2 movementVector;
-
 	protected InputHandler() {}
 
 	public Vector2 GetMovementVector() {
+		return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+	}
 
-		movementVector.x = Input.GetAxisRaw("Horizontal");
-		movementVector.y = Input.GetAxisRaw("Vertical");
+	public bool IsJumpPressed() {
+		return Input.GetKeyDown(KeyCode.Space);
+	}
 
-		return movementVector;
+	public bool IsJumpReleased() {
+		return Input.GetKeyUp(KeyCode.Space);
 	}
 }

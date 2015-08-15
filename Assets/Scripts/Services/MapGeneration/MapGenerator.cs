@@ -20,7 +20,7 @@ public class MapGenerator : MonoBehaviour {
 	
 	static void RandomFillMap(Map map, int randomFillPercent) {
 
-		System.Random pseudoRandom = new System.Random();
+		System.Random pseudoRandom = new System.Random(0);
 		
 		for (int x = 0; x < map.Width; x++) {
 			for (int y = 0; y < map.Height; y++) {
