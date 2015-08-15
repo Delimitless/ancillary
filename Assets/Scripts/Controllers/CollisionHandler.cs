@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class CollisionHandler {
+[RequireComponent (typeof(BoxCollider2D))]
+public class CollisionHandler : MonoBehaviour {
+
+	public LayerMask collisionMask;
+	[Range(0, 90)]
+	public float maxClimbAngle = 75;
+	[Range(0, 90)]
+	public float maxDescendAngle = 75;
 	
 	const float SKIN_WIDTH = .015f;
 	const int HORIZONTAL_RAY_COUNT = 4;
 	const int VERTICAL_RAY_COUNT = 4;
-	const float MAX_CLIMB_ANGLE = 75;
-	const float MAX_DESCEND_ANGLE = 75;
 	
 	float horizontalRaySpacing;
 	float verticalRaySpacing;
 
 	BoxCollider2D boxCollider;
-	LayerMask collisionMask;
 	CollisionInfo collisions;
 	RaycastOrigins raycastOrigins;
 
-	public CollisionHandler(BoxCollider2D boxCollider, LayerMask collisionMask) {
-		this.boxCollider = boxCollider;
-		this.collisionMask = collisionMask;
+	void Awake() {
+		boxCollider = GetComponent<BoxCollider2D>();
 
 		CalculateRaySpacing ();
 	}
@@ -61,7 +64,7 @@ public class CollisionHandler {
 				
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 				
-				if (i == 0 && slopeAngle <= MAX_CLIMB_ANGLE) {
+				if (i == 0 && slopeAngle <= maxClimbAngle) {
 					float distanceToSlopeStart = 0;
 					if (!Mathf.Approximately(slopeAngle, collisions.prevSlopeAngle)) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
@@ -71,7 +74,7 @@ public class CollisionHandler {
 					velocity.x += distanceToSlopeStart * directionX;
 				}
 				
-				if (!collisions.climbingSlope || slopeAngle > MAX_CLIMB_ANGLE) {
+				if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
 					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
 					rayLength = hit.distance;
 					
@@ -150,7 +153,7 @@ public class CollisionHandler {
 		
 		if (hit) {
 			float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-			if (!Mathf.Approximately(slopeAngle, 0) && slopeAngle <= MAX_DESCEND_ANGLE) {
+			if (!Mathf.Approximately(slopeAngle, 0) && slopeAngle <= maxDescendAngle) {
 				if (Mathf.Approximately(Mathf.Sign(hit.normal.x), directionX)) {
 					if (hit.distance - SKIN_WIDTH <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x)) {
 						float moveDistance = Mathf.Abs(velocity.x);

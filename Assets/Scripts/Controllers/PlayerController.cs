@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent (typeof(BoxCollider2D))]
+[RequireComponent (typeof(CollisionHandler))]
 public class PlayerController : MonoBehaviour {
 	
 	public float jumpHeight = 4;
@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour {
 	public float accelerationTimeAirborne = .2f;
 	public float accelerationTimeGrounded = .1f;
 	public float moveSpeed = 6;
-
-	public LayerMask collisionMask;
 	
 	float gravityAcceleration;
 	float jumpVelocity;
@@ -22,7 +20,7 @@ public class PlayerController : MonoBehaviour {
 	
 	void Start() {
 
-		collisionHandler = new CollisionHandler(GetComponent<BoxCollider2D>(), collisionMask);
+		collisionHandler = GetComponent<CollisionHandler>();
 
 		// Kinematic equation: accerlation = (2 x distance) / (time^2)
 		// Initial velocity is zero.
