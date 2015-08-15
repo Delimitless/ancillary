@@ -1,9 +1,7 @@
 using UnityEngine;
 
 public class CollisionHandler {
-
-	public CollisionInfo collisions;
-
+	
 	const float SKIN_WIDTH = .015f;
 	const int HORIZONTAL_RAY_COUNT = 4;
 	const int VERTICAL_RAY_COUNT = 4;
@@ -17,6 +15,7 @@ public class CollisionHandler {
 
 	BoxCollider2D boxCollider;
 	LayerMask collisionMask;
+	CollisionInfo collisions;
 	RaycastOrigins raycastOrigins;
 
 	public CollisionHandler(BoxCollider2D boxCollider, LayerMask collisionMask) {
@@ -43,6 +42,14 @@ public class CollisionHandler {
 		}
 		
 		return velocity;
+	}
+
+	public bool HasCollisionBelow() {
+		return collisions.below;
+	}
+
+	public bool HasCollisionAbove() {
+		return collisions.above;
 	}
 	
 	void HorizontalCollisions(ref Vector2 velocity) {
@@ -184,7 +191,7 @@ public class CollisionHandler {
 		verticalRaySpacing = bounds.size.x / (VERTICAL_RAY_COUNT - 1);
 	}
 	
-	public struct CollisionInfo {
+	struct CollisionInfo {
 		public bool above, below;
 		public bool left, right;
 		

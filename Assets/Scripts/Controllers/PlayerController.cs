@@ -36,11 +36,11 @@ public class PlayerController : MonoBehaviour {
 	void Update() {
 
 		// Handle y direction.
-		if (collisionHandler.collisions.above || collisionHandler.collisions.below) {
+		if (collisionHandler.HasCollisionAbove() || collisionHandler.HasCollisionBelow()) {
 			velocity.y = 0;
 		}
 
-		if (InputHandler.Instance.IsJumpPressed() && collisionHandler.collisions.below) {
+		if (InputHandler.Instance.IsJumpPressed() && collisionHandler.HasCollisionBelow()) {
 			velocity.y = jumpVelocity;
 		}
 
@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour {
 
 		// Handle x direction.
 		float targetVelocityX = InputHandler.Instance.GetMovementVector().x * moveSpeed;
-		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (collisionHandler.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
+		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (collisionHandler.HasCollisionBelow())?accelerationTimeGrounded:accelerationTimeAirborne);
 
 		// Handle collisions.
 		Vector2 finalVelocity = collisionHandler.CalculateCollisions (velocity * Time.deltaTime);
