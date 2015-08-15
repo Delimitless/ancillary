@@ -17,6 +17,8 @@ public class PlayerCollisionController : MonoBehaviour {
 	float horizontalRaySpacing;
 	float verticalRaySpacing;
 
+	Vector2 originalVelocity;
+
 	RaycastOrigins raycastOrigins;
 	BoxCollider2D boxCollider;
 	
@@ -29,7 +31,7 @@ public class PlayerCollisionController : MonoBehaviour {
 
 		UpdateRaycastOrigins ();
 		collisions.Reset ();
-		collisions.velocityOld = velocity;
+		originalVelocity = velocity;
 		
 		if (velocity.y < 0) {
 			DescendSlope(ref velocity);
@@ -62,10 +64,10 @@ public class PlayerCollisionController : MonoBehaviour {
 				if (i == 0 && slopeAngle <= MAX_CLIMB_ANGLE) {
 					if (collisions.descendingSlope) {
 						collisions.descendingSlope = false;
-						velocity = collisions.velocityOld;
+						velocity = originalVelocity;
 					}
 					float distanceToSlopeStart = 0;
-					if (slopeAngle != collisions.slopeAngleOld) {
+					if (slopeAngle != collisions.prevSlopeAngle) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
@@ -186,19 +188,13 @@ public class PlayerCollisionController : MonoBehaviour {
 		verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
 	}
 	
-	struct RaycastOrigins {
-		public Vector2 topLeft, topRight;
-		public Vector2 bottomLeft, bottomRight;
-	}
-	
 	public struct CollisionInfo {
 		public bool above, below;
 		public bool left, right;
 		
 		public bool climbingSlope;
 		public bool descendingSlope;
-		public float slopeAngle, slopeAngleOld;
-		public Vector3 velocityOld;
+		public float slopeAngle, prevSlopeAngle;
 		
 		public void Reset() {
 			above = below = false;
@@ -206,8 +202,13 @@ public class PlayerCollisionController : MonoBehaviour {
 			climbingSlope = false;
 			descendingSlope = false;
 			
-			slopeAngleOld = slopeAngle;
+			prevSlopeAngle = slopeAngle;
 			slopeAngle = 0;
 		}
-	}	
+	}
+
+	struct RaycastOrigins {
+		public Vector2 topLeft, topRight;
+		public Vector2 bottomLeft, bottomRight;
+	}
 }
