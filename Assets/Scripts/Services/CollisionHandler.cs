@@ -91,6 +91,18 @@ public class CollisionHandler : MonoBehaviour {
 			}
 		}
 	}
+
+	void ClimbSlope(ref Vector2 velocity) {
+		float moveDistance = Mathf.Abs(velocity.x);
+		float climbVelocityY = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance;
+		
+		if (velocity.y <= climbVelocityY) {
+			velocity.y = climbVelocityY;
+			velocity.x = Mathf.Cos(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance * Mathf.Sign(velocity.x);
+			collisions.below = true;
+			collisions.climbingSlope = true;
+		}
+	}
 	
 	void VerticalCollisions(ref Vector2 velocity) {
 		if (velocity.y < 0) {
@@ -133,18 +145,6 @@ public class CollisionHandler : MonoBehaviour {
 					collisions.slopeAngle = slopeAngle;
 				}
 			}
-		}
-	}
-	
-	void ClimbSlope(ref Vector2 velocity) {
-		float moveDistance = Mathf.Abs(velocity.x);
-		float climbVelocityY = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance;
-		
-		if (velocity.y <= climbVelocityY) {
-			velocity.y = climbVelocityY;
-			velocity.x = Mathf.Cos(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance * Mathf.Sign(velocity.x);
-			collisions.below = true;
-			collisions.climbingSlope = true;
 		}
 	}
 	
