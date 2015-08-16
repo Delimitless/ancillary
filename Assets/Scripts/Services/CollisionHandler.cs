@@ -66,12 +66,14 @@ public class CollisionHandler : MonoBehaviour {
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 				
 				if (i == 0 && slopeAngle <= maxClimbAngle) {
+					collisions.slopeAngle = slopeAngle;
+
 					float distanceToSlopeStart = 0;
-					if (collisions.IsStartingNewSlope(slopeAngle)) {
+					if (collisions.IsStartingNewSlope()) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
-					ClimbSlope(ref velocity, slopeAngle);
+					ClimbSlope(ref velocity);
 					velocity.x += distanceToSlopeStart * directionX;
 				}
 				
@@ -134,16 +136,15 @@ public class CollisionHandler : MonoBehaviour {
 		}
 	}
 	
-	void ClimbSlope(ref Vector2 velocity, float slopeAngle) {
+	void ClimbSlope(ref Vector2 velocity) {
 		float moveDistance = Mathf.Abs(velocity.x);
-		float climbVelocityY = Mathf.Sin(slopeAngle * Mathf.Deg2Rad) * moveDistance;
+		float climbVelocityY = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance;
 		
 		if (velocity.y <= climbVelocityY) {
 			velocity.y = climbVelocityY;
-			velocity.x = Mathf.Cos(slopeAngle * Mathf.Deg2Rad) * moveDistance * Mathf.Sign(velocity.x);
+			velocity.x = Mathf.Cos(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance * Mathf.Sign(velocity.x);
 			collisions.below = true;
 			collisions.climbingSlope = true;
-			collisions.slopeAngle = slopeAngle;
 		}
 	}
 	
@@ -207,8 +208,8 @@ public class CollisionHandler : MonoBehaviour {
 			slopeAngle = 0;
 		}
 
-		public bool IsStartingNewSlope(float angle) {
-			return !Mathf.Approximately(angle, prevSlopeAngle);
+		public bool IsStartingNewSlope() {
+			return !Mathf.Approximately(slopeAngle, prevSlopeAngle);
 		}
 	}
 
