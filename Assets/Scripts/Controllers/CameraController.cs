@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CameraFollow : MonoBehaviour {
+public class CameraController : MonoBehaviour {
 	
 	public GameObject target;
 	public float verticalOffset;
