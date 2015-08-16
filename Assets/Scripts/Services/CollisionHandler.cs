@@ -31,10 +31,10 @@ public class CollisionHandler : MonoBehaviour {
 		UpdateRaycastOrigins ();
 		collisions.Reset();
 
-		if (!Mathf.Approximately(velocity.x, 0)) {
+		if (VectorUtil.IsMovingInXDirection(velocity)) {
 			HorizontalCollisions (ref velocity);
 		}
-		if (!Mathf.Approximately(velocity.y, 0)) {
+		if (VectorUtil.IsMovingInYDirection(velocity)) {
 			VerticalCollisions (ref velocity);
 		}
 		
@@ -52,9 +52,10 @@ public class CollisionHandler : MonoBehaviour {
 	void HorizontalCollisions(ref Vector2 velocity) {
 		float directionX = Mathf.Sign(velocity.x);
 		float rayLength = Mathf.Abs(velocity.x) + SKIN_WIDTH;
+		Vector2 rayOrigin = (VectorUtil.IsPositiveXDirection(velocity))?raycastOrigins.bottomRight:raycastOrigins.bottomLeft;
 		
 		for (int i = 0; i < HORIZONTAL_RAY_COUNT; i ++) {
-			Vector2 rayOrigin = (Mathf.Approximately(directionX, -1))?raycastOrigins.bottomLeft:raycastOrigins.bottomRight;
+
 			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 			
@@ -66,7 +67,7 @@ public class CollisionHandler : MonoBehaviour {
 				
 				if (i == 0 && slopeAngle <= maxClimbAngle) {
 					float distanceToSlopeStart = 0;
-					if (!Mathf.Approximately(slopeAngle, collisions.prevSlopeAngle)) {
+					if (collisions.IsStartingNewSlope(slopeAngle)) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
@@ -204,6 +205,10 @@ public class CollisionHandler : MonoBehaviour {
 			
 			prevSlopeAngle = slopeAngle;
 			slopeAngle = 0;
+		}
+
+		public bool IsStartingNewSlope(float angle) {
+			return !Mathf.Approximately(angle, prevSlopeAngle);
 		}
 	}
 
