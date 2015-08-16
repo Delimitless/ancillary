@@ -11,7 +11,7 @@ public class CollisionHandler : MonoBehaviour {
 	
 	const float SKIN_WIDTH = .015f;
 	const int HORIZONTAL_RAY_COUNT = 4;
-	const int VERTICAL_RAY_COUNT = 4;
+	const int VERTICAL_RAY_COUNT = 6;
 	
 	float horizontalRaySpacing;
 	float verticalRaySpacing;
@@ -52,17 +52,16 @@ public class CollisionHandler : MonoBehaviour {
 	void HorizontalCollisions(ref Vector2 velocity) {
 		float directionX = Mathf.Sign(velocity.x);
 		float rayLength = Mathf.Abs(velocity.x) + SKIN_WIDTH;
-		Vector2 rayOrigin = (VectorUtil.IsPositiveXDirection(velocity))?raycastOrigins.bottomRight:raycastOrigins.bottomLeft;
 		
 		for (int i = 0; i < HORIZONTAL_RAY_COUNT; i ++) {
 
+			Vector2 rayOrigin = (VectorUtil.IsPositiveXDirection(velocity)) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 			
 			Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
 			
 			if (hit) {
-				
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 				
 				if (i == 0 && slopeAngle <= maxClimbAngle) {
