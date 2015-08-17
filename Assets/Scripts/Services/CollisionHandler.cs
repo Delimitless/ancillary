@@ -9,7 +9,7 @@ public class CollisionHandler : MonoBehaviour {
 	[Range(0, 90)]
 	public float maxDescendAngle = 75;
 	
-	const float SKIN_WIDTH = .015f;
+	const float SKIN_WIDTH = 0.02f;
 	const int HORIZONTAL_RAY_COUNT = 4;
 	const int VERTICAL_RAY_COUNT = 6;
 	
@@ -80,7 +80,7 @@ public class CollisionHandler : MonoBehaviour {
 					velocity.x += distanceToSlopeStart * directionX;
 				}
 
-				// Handle non-climable slope collision
+				// Handle non-climbable slope collision
 				if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
 					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
 					rayLength = hit.distance;
