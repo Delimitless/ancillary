@@ -28,4 +28,8 @@ public class VectorUtil {
 			return false;
 		}
 	}
+
+	public static bool IsNegativeXDirection(Vector2 vector) {
+		return !IsPositiveXDirection(vector);
+	}
 }

@@ -52,18 +52,19 @@ public class CollisionHandler : MonoBehaviour {
 	void HorizontalCollisions(ref Vector2 velocity) {
 		float directionX = Mathf.Sign(velocity.x);
 		float rayLength = Mathf.Abs(velocity.x) + SKIN_WIDTH;
+		Vector2 rayOrigin = (VectorUtil.IsPositiveXDirection(velocity)) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 		
 		for (int i = 0; i < HORIZONTAL_RAY_COUNT; i ++) {
 
-			Vector2 rayOrigin = (VectorUtil.IsPositiveXDirection(velocity)) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
-			rayOrigin += Vector2.up * (horizontalRaySpacing * i);
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
 			
 			Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
 			
 			if (hit) {
+				//float distanceToCollision = (hit.distance - SKIN_WIDTH) * directionX;
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-				
+
+				// Only use bottom ray to check climbing slopes.
 				if (i == 0 && slopeAngle <= maxClimbAngle) {
 					collisions.slopeAngle = slopeAngle;
 
@@ -72,10 +73,11 @@ public class CollisionHandler : MonoBehaviour {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
-					ClimbSlope(ref velocity);
+					AdjustVelocityForSlope(ref velocity);
 					velocity.x += distanceToSlopeStart * directionX;
 				}
-				
+
+				// 
 				if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
 					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
 					rayLength = hit.distance;
@@ -83,18 +85,21 @@ public class CollisionHandler : MonoBehaviour {
 					if (collisions.climbingSlope) {
 						velocity.y = Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x);
 					}
-					
-					collisions.left = Mathf.Approximately(directionX, -1);
-					collisions.right = Mathf.Approximately(directionX, 1);
+
+					collisions.right = VectorUtil.IsPositiveXDirection(velocity);
+					collisions.left = VectorUtil.IsNegativeXDirection(velocity);
 				}
 			}
+
+			rayOrigin += Vector2.up * horizontalRaySpacing;
 		}
 	}
 
-	void ClimbSlope(ref Vector2 velocity) {
+	void AdjustVelocityForSlope(ref Vector2 velocity) {
 		float moveDistance = Mathf.Abs(velocity.x);
 		float climbVelocityY = Mathf.Sin(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance;
-		
+
+		// If velocity is already greater than the climbing velocity, then we are jumping, so don't climb.
 		if (velocity.y <= climbVelocityY) {
 			velocity.y = climbVelocityY;
 			velocity.x = Mathf.Cos(collisions.slopeAngle * Mathf.Deg2Rad) * moveDistance * Mathf.Sign(velocity.x);
