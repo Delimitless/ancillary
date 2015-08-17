@@ -8,8 +8,8 @@ public class CollisionHandler : MonoBehaviour {
 	public float maxClimbAngle = 75;
 	[Range(0, 90)]
 	public float maxDescendAngle = 75;
-	
-	const float SKIN_WIDTH = 0.02f;
+	public float skinWidth = 0.02f;
+
 	const int HORIZONTAL_RAY_COUNT = 4;
 	const int VERTICAL_RAY_COUNT = 6;
 	
@@ -51,7 +51,7 @@ public class CollisionHandler : MonoBehaviour {
 	
 	void HorizontalCollisions(ref Vector2 velocity) {
 		float directionX = Mathf.Sign(velocity.x);
-		float rayLength = Mathf.Abs(velocity.x) + SKIN_WIDTH;
+		float rayLength = Mathf.Abs(velocity.x) + skinWidth;
 		Vector2 rayOrigin = (VectorUtil.IsPositiveXDirection(velocity)) ? raycastOrigins.bottomRight : raycastOrigins.bottomLeft;
 		
 		for (int i = 0; i < HORIZONTAL_RAY_COUNT; i ++) {
@@ -70,7 +70,7 @@ public class CollisionHandler : MonoBehaviour {
 					// Remove distance to start of slope from velocity, if just starting.
 					float distanceToSlopeStart = 0;
 					if (collisions.IsStartingNewSlope()) {
-						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
+						distanceToSlopeStart = hit.distance-skinWidth;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
 
@@ -82,7 +82,7 @@ public class CollisionHandler : MonoBehaviour {
 
 				// Handle non-climbable slope collision
 				if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
-					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
+					velocity.x = (hit.distance - skinWidth) * directionX;
 					rayLength = hit.distance;
 					
 					if (collisions.climbingSlope) {
@@ -117,7 +117,7 @@ public class CollisionHandler : MonoBehaviour {
 		}
 
 		float directionY = Mathf.Sign(velocity.y);
-		float rayLength = Mathf.Abs(velocity.y) + SKIN_WIDTH;
+		float rayLength = Mathf.Abs(velocity.y) + skinWidth;
 		
 		for (int i = 0; i < VERTICAL_RAY_COUNT; i ++) {
 			Vector2 rayOrigin = (Mathf.Approximately(directionY, -1))?raycastOrigins.bottomLeft:raycastOrigins.topLeft;
@@ -127,7 +127,7 @@ public class CollisionHandler : MonoBehaviour {
 			Debug.DrawRay(rayOrigin, Vector2.up * directionY * rayLength,Color.red);
 			
 			if (hit) {
-				velocity.y = (hit.distance - SKIN_WIDTH) * directionY;
+				velocity.y = (hit.distance - skinWidth) * directionY;
 				rayLength = hit.distance;
 				
 				if (collisions.climbingSlope) {
@@ -141,14 +141,14 @@ public class CollisionHandler : MonoBehaviour {
 		
 		if (collisions.climbingSlope) {
 			float directionX = Mathf.Sign(velocity.x);
-			rayLength = Mathf.Abs(velocity.x) + SKIN_WIDTH;
+			rayLength = Mathf.Abs(velocity.x) + skinWidth;
 			Vector2 rayOrigin = ((Mathf.Approximately(directionX, -1))?raycastOrigins.bottomLeft:raycastOrigins.bottomRight) + Vector2.up * velocity.y;
 			RaycastHit2D hit = Physics2D.Raycast(rayOrigin,Vector2.right * directionX,rayLength,collisionMask);
 			
 			if (hit) {
 				float slopeAngle = Vector2.Angle(hit.normal,Vector2.up);
 				if (!Mathf.Approximately(slopeAngle, collisions.slopeAngle)) {
-					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
+					velocity.x = (hit.distance - skinWidth) * directionX;
 					collisions.slopeAngle = slopeAngle;
 				}
 			}
@@ -164,7 +164,7 @@ public class CollisionHandler : MonoBehaviour {
 			float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 			if (!Mathf.Approximately(slopeAngle, 0) && slopeAngle <= maxDescendAngle) {
 				if (Mathf.Approximately(Mathf.Sign(hit.normal.x), directionX)) {
-					if (hit.distance - SKIN_WIDTH <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x)) {
+					if (hit.distance - skinWidth <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(velocity.x)) {
 						float moveDistance = Mathf.Abs(velocity.x);
 						float descendVelocityY = Mathf.Sin (slopeAngle * Mathf.Deg2Rad) * moveDistance;
 						velocity.x = Mathf.Cos (slopeAngle * Mathf.Deg2Rad) * moveDistance * Mathf.Sign (velocity.x);
@@ -181,7 +181,7 @@ public class CollisionHandler : MonoBehaviour {
 	
 	void UpdateRaycastOrigins() {
 		Bounds bounds = boxCollider.bounds;
-		bounds.Expand(SKIN_WIDTH * -2);
+		bounds.Expand(skinWidth * -2);
 		
 		raycastOrigins.bottomLeft = new Vector2 (bounds.min.x, bounds.min.y);
 		raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y);
@@ -191,7 +191,7 @@ public class CollisionHandler : MonoBehaviour {
 	
 	void CalculateRaySpacing() {
 		Bounds bounds = boxCollider.bounds;
-		bounds.Expand(SKIN_WIDTH * -2);
+		bounds.Expand(skinWidth * -2);
 		
 		horizontalRaySpacing = bounds.size.y / (HORIZONTAL_RAY_COUNT - 1);
 		verticalRaySpacing = bounds.size.x / (VERTICAL_RAY_COUNT - 1);
