@@ -63,7 +63,7 @@ public class CollisionHandler : MonoBehaviour {
 			if (hit) {
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 
-				// Only use bottom ray to check climbing slopes.
+				// Handle climbing slopes, only check using bottom (first) ray.
 				if (i == 0 && slopeAngle <= maxClimbAngle) {
 					collisions.slopeAngle = slopeAngle;
 
@@ -75,10 +75,12 @@ public class CollisionHandler : MonoBehaviour {
 					}
 
 					AdjustVelocityForSlope(ref velocity);
+
+					// Re-add distance to slope start (
 					velocity.x += distanceToSlopeStart * directionX;
 				}
 
-				// 
+				// Handle non-climable slope collision
 				if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
 					velocity.x = (hit.distance - SKIN_WIDTH) * directionX;
 					rayLength = hit.distance;
