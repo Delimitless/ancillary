@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour {
 
 		// Kinematic equation: accerlation = (2 x distance) / (time^2)
 		// Initial velocity is zero.
-		gravityAcceleration = -(2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
+		gravityAcceleration = (2 * jumpHeight) / Mathf.Pow (timeToJumpApex, 2);
 
 		// Kinematic equation: final_velocity = acceleration * time
 		// Initial velocity is zero.
@@ -42,16 +42,16 @@ public class PlayerController : MonoBehaviour {
 			velocity.y = jumpVelocity;
 		}
 
-		velocity.y += gravityAcceleration * Time.deltaTime;
+		velocity.y -= gravityAcceleration * Time.deltaTime;
 
 		// Handle x direction.
 		float targetVelocityX = InputHandler.Instance.GetMovementVector().x * moveSpeed;
 		velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, (collisionHandler.HasCollisionBelow())?accelerationTimeGrounded:accelerationTimeAirborne);
 
 		// Handle collisions.
-		Vector2 finalVelocity = collisionHandler.CalculateCollisions (velocity * Time.deltaTime);
+		Vector2 finalVelocity = collisionHandler.AdjustVelocityForCollisions(velocity * Time.deltaTime);
 
 		// Move player
-		transform.Translate (finalVelocity);
+		transform.Translate(finalVelocity);
 	}
 }

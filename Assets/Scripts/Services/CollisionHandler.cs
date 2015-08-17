@@ -26,7 +26,7 @@ public class CollisionHandler : MonoBehaviour {
 		CalculateRaySpacing ();
 	}
 
-	public Vector2 CalculateCollisions(Vector2 velocity) {
+	public Vector2 AdjustVelocityForCollisions(Vector2 velocity) {
 
 		UpdateRaycastOrigins ();
 		collisions.Reset();
