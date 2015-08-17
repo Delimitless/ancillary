@@ -61,18 +61,19 @@ public class CollisionHandler : MonoBehaviour {
 			Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength,Color.red);
 			
 			if (hit) {
-				//float distanceToCollision = (hit.distance - SKIN_WIDTH) * directionX;
 				float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 
 				// Only use bottom ray to check climbing slopes.
 				if (i == 0 && slopeAngle <= maxClimbAngle) {
 					collisions.slopeAngle = slopeAngle;
 
+					// Remove distance to start of slope from velocity, if just starting.
 					float distanceToSlopeStart = 0;
 					if (collisions.IsStartingNewSlope()) {
 						distanceToSlopeStart = hit.distance-SKIN_WIDTH;
 						velocity.x -= distanceToSlopeStart * directionX;
 					}
+
 					AdjustVelocityForSlope(ref velocity);
 					velocity.x += distanceToSlopeStart * directionX;
 				}
