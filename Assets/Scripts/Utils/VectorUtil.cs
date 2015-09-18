@@ -11,7 +11,7 @@ public class VectorUtil {
 		}
 	}
 
-	// Add stuff3 - release 0.0.1 feature branch
+	// Add stuff4 - second change
 	public static bool IsMovingInYDirection(Vector2 vector) {
 		if (Mathf.Approximately(vector.y, 0)) {
 			return false;
