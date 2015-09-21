@@ -11,7 +11,7 @@ public class VectorUtil {
 		}
 	}
 
-	// Change 2 (release)
+	// Change 3 (release)
 	public static bool IsMovingInYDirection(Vector2 vector) {
 		if (Mathf.Approximately(vector.y, 0)) {
 			return false;
